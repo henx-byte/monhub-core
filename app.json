@@ -5,22 +5,31 @@
     "version": "0.1.0",
     "orientation": "portrait",
     "userInterfaceStyle": "dark",
+    "icon": "./assets/icon.png",
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.monhub.jobs"
     },
     "android": {
-      "package": "com.monhub.jobs"
+      "package": "com.monhub.jobs",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/icon.png",
+        "backgroundColor": "#000000"
+      }
     },
     "plugins": [
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#000000"
+          "image": "./assets/splash.png",
+          "imageWidth": 200,
+          "backgroundColor": "#000000",
+          "dark": {
+            "image": "./assets/splash.png",
+            "backgroundColor": "#000000"
+          }
         }
-      ],
-      "expo-status-bar",
-      "expo-font"
+      ]
     ]
   }
 }
