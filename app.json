@@ -1,0 +1,26 @@
+{
+  "expo": {
+    "name": "Monhub",
+    "slug": "monhub",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.monhub.jobs"
+    },
+    "android": {
+      "package": "com.monhub.jobs"
+    },
+    "plugins": [
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#000000"
+        }
+      ],
+      "expo-status-bar",
+      "expo-font"
+    ]
+  }
+}

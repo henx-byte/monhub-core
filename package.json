@@ -1,0 +1,19 @@
+{
+  "name": "monhub",
+  "version": "0.1.0",
+  "main": "node_modules/expo/AppEntry.js",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo run:android",
+    "build:apk": "cd android && ./gradlew assembleRelease"
+  },
+  "dependencies": {
+    "@expo/vector-icons": "^15.0.2",
+    "expo": "~57.0.0",
+    "expo-font": "~57.0.4",
+    "expo-splash-screen": "~57.0.10",
+    "expo-status-bar": "~57.0.1",
+    "react": "19.2.3",
+    "react-native": "0.86.3"
+  }
+}
