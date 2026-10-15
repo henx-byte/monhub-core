@@ -103,9 +103,9 @@ export default function App() {
   useEffect(() => {
     console.log('[CORE v27 Search 9 + Player Top Fix]');
     if (AsyncStorage) {
-      AsyncStorage.getItem('monhub_library').then(v => { if (v) setLibrary(JSON.parse(v)); }).catch(()=>{});
-      AsyncStorage.getItem('monhub_theme').then(v => { if (v) setTheme(v); }).catch(()=>{});
-      AsyncStorage.getItem('monhub_extensions_v26').then(v => {
+      AsyncStorage.getItem('moonhub_library').then(v => { if (v) setLibrary(JSON.parse(v)); }).catch(()=>{});
+      AsyncStorage.getItem('moonhub_theme').then(v => { if (v) setTheme(v); }).catch(()=>{});
+      AsyncStorage.getItem('moonhub_extensions_v26').then(v => {
         if (v) {
           try {
             const parsed = JSON.parse(v);
@@ -120,15 +120,15 @@ export default function App() {
     }
   }, []);
 
-  useEffect(() => { if (AsyncStorage) AsyncStorage.setItem('monhub_library', JSON.stringify(library)).catch(()=>{}); }, [library]);
-  useEffect(() => { if (AsyncStorage) AsyncStorage.setItem('monhub_theme', theme).catch(()=>{}); }, [theme]);
+  useEffect(() => { if (AsyncStorage) AsyncStorage.setItem('moonhub_library', JSON.stringify(library)).catch(()=>{}); }, [library]);
+  useEffect(() => { if (AsyncStorage) AsyncStorage.setItem('moonhub_theme', theme).catch(()=>{}); }, [theme]);
   useEffect(() => {
     if (AsyncStorage) {
       const toSave = {};
       Object.entries(extensions).forEach(([id, ext]) => {
         toSave[id] = { id: ext.id, name: ext.name, supportedTypes: ext.supportedTypes, enabled: ext.enabled, version: ext.version, source: ext._source, popularCode: ext._popularCode, searchCode: ext._searchCode, detailCode: ext._detailCode, streamCode: ext._streamCode };
       });
-      AsyncStorage.setItem('monhub_extensions_v26', JSON.stringify(toSave));
+      AsyncStorage.setItem('moonhub_extensions_v26', JSON.stringify(toSave));
     }
   }, [extensions]);
 

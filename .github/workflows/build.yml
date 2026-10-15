@@ -2,8 +2,11 @@ name: Build Monhub APK - SDK 57
 
 on:
   push:
-    branches: [ main ]
+    tags: [ 'v*' ]
   workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   build:
@@ -22,11 +25,54 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Accept Licenses (FIX SDK 57)
+      - name: Accept Licenses
         run: yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
 
       - name: Install deps
         run: npm install
+
+      - name: Set version & get changelog
+        id: changelog
+        run: |
+          TAG=${GITHUB_REF#refs/tags/v}
+          VERSION=$TAG
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          TAG_WITH_V="v$VERSION"
+          
+          if [[ "$VERSION" == *"beta"* ]]; then
+            echo "IS_BETA=true" >> $GITHUB_ENV
+          else
+            echo "IS_BETA=false" >> $GITHUB_ENV
+          fi
+          
+          # Update app.json version
+          npx jq --arg v "$VERSION" '.expo.version = $v' app.json > tmp.json && mv tmp.json app.json
+          
+          # AMBIL CHANGELOG UNTUK VERSI INI
+          # Cari section ## [v1.0.9] atau ## v1.0.9 atau ## [1.0.9]
+          awk -v tag="$VERSION" -v tagv="$TAG_WITH_V" '
+            BEGIN { found=0; }
+            /^## / {
+              if (found) exit;
+              if (index($0, tag) || index($0, tagv)) { found=1; next; }
+            }
+            found { print; }
+          ' CHANGELOG.md > release_notes.txt
+          
+          # Kalo CHANGELOG.md gak ada section nya, kasih default
+          if [ ! -s release_notes.txt ]; then
+            echo "No changelog found for $TAG_WITH_V, check CHANGELOG.md" > release_notes.txt
+            echo "" >> release_notes.txt
+            echo "### Changes" >> release_notes.txt
+            git log $(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo HEAD~10)..HEAD --pretty=format:"- %s" >> release_notes.txt || echo "- Update" >> release_notes.txt
+          fi
+          
+          cat release_notes.txt
+          
+          # Simpan buat step selanjutnya
+          echo "notes<<EOF" >> $GITHUB_OUTPUT
+          cat release_notes.txt >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
 
       - name: Expo Prebuild Clean
         run: npx expo prebuild --platform android --clean
@@ -36,9 +82,25 @@ jobs:
           cd android
           chmod +x gradlew
           ./gradlew assembleRelease --no-daemon
+          cd ..
+          cp android/app/build/outputs/apk/release/app-release.apk monhub-v${{ env.VERSION }}.apk
 
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
+      - name: Upload to Release
+        uses: softprops/action-gh-release@v2
         with:
-          name: Monhub-SDK57-Jobs-Edition
-          path: android/app/build/outputs/apk/release/app-release.apk
+          files: monhub-v${{ env.VERSION }}.apk
+          prerelease: ${{ env.IS_BETA == 'true' }}
+          body: |
+            ## 🚀 Monhub ${{ env.VERSION }} ${{ env.IS_BETA == 'true' && '(BETA)' || '' }}
+            
+            ${{ steps.changelog.outputs.notes }}
+            
+            ---
+            ### 📥 Download
+            **APK:** `monhub-v${{ env.VERSION }}.apk`
+            
+            ### 🔗 Links
+            - Full Changelog: https://github.com/henx-byte/monhub-core/blob/main/CHANGELOG.md
+            - Compare: https://github.com/henx-byte/monhub-core/compare/${{ github.event.repository.default_branch }}...v${{ env.VERSION }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,17 +1,17 @@
 {
   "expo": {
-    "name": "Monhub",
-    "slug": "monhub",
-    "version": "0.1.0",
+    "name": "Moonhub",
+    "slug": "moonhub",
+    "version": "1.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "dark",
     "icon": "./assets/icon.png",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.monhub.jobs"
+      "bundleIdentifier": "com.moonhub.app"
     },
     "android": {
-      "package": "com.monhub.jobs",
+      "package": "com.moonhub.app",
       "adaptiveIcon": {
         "foregroundImage": "./assets/icon.png",
         "backgroundColor": "#000000"
