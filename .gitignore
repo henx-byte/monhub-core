@@ -186,4 +186,7 @@ dist
 # expo 
 .expo/
 
+# vs code
+.vscode
+
 # End of https://www.toptal.com/developers/gitignore/api/node,android,dotenv
