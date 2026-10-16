@@ -4,47 +4,134 @@ import { Ionicons } from "@expo/vector-icons";
 import { styles } from "../styles/styles.js";
 import { stripHtml } from "../helpers/xpath.js";
 
-export function DetailView({ selected, detailData, colors, setSelected, setPlayingStream, library, setLibrary }) {
+export function DetailView({
+  selected,
+  detailData,
+  colors,
+  setSelected,
+  handleStream,
+  isInLibrary,
+}) {
   if (!selected) return null;
-  const data = detailData || selected;
-  const isInLib = library.find((x) => x.id === data.id);
   return (
-    <ScrollView>
-      <TouchableOpacity onPress={() => setSelected(null)} style={styles.backBtn}>
-        <Ionicons name="chevron-back" size={20} color={colors.text} />
-        <Text style={[styles.backText, { color: colors.text }]}>Back</Text>
+    <ScrollView
+      style={[styles.container, { backgroundColor: colors.bg }]}
+      showsVerticalScrollIndicator={false}
+    >
+      <TouchableOpacity
+        onPress={() => setSelected(null)}
+        style={styles.backBtn}
+      >
+        <Ionicons name="chevron-back" size={20} color="#FFF" />
+        <Text style={styles.backText}>Back</Text>
       </TouchableOpacity>
       <View style={styles.detailRow}>
-        <View style={styles.detailPoster}>
-          <Image source={{ uri: data.coverImage?.extraLarge || data.coverImage?.large }} style={styles.detailImg} />
+        <View style={[styles.detailPoster, { backgroundColor: colors.card }]}>
+          <Image
+            source={{
+              uri:
+                (detailData?.coverImage || selected.coverImage).extraLarge ||
+                selected.coverImage.large,
+            }}
+            style={styles.detailImg}
+          />
         </View>
-        <View style={{ flex: 1, marginLeft: 14 }}>
-          <Text style={[styles.detailTitle, { color: colors.text }]}>{data.title?.english || data.title?.romaji}</Text>
-          <Text style={[styles.detailMeta, { color: colors.sub }]}>
-            {data.seasonYear} • {data.status} • {data.averageScore}%
+        <View style={{ flex: 1, marginLeft: 16 }}>
+          <Text style={[styles.detailTitle, { color: colors.text }]}>
+            {(detailData?.title || selected.title).english ||
+              selected.title.romaji}
           </Text>
-          <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6, marginTop: 10 }}>
-            {(data.genres || []).slice(0, 3).map((g) => (
-              <View key={g} style={[styles.genrePill, { backgroundColor: colors.card2 }]}>
-                <Text style={[styles.genreText, { color: colors.text }]}>{g}</Text>
-              </View>
-            ))}
+          <Text style={[styles.detailMeta, { color: colors.sub }]}>
+            {selected._type}
+          </Text>
+          <View
+            style={{
+              flexDirection: "row",
+              gap: 6,
+              marginTop: 10,
+              flexWrap: "wrap",
+            }}
+          >
+            {(detailData?.genres || selected.genres || [])
+              .slice(0, 3)
+              .map((g) => (
+                <View
+                  key={g}
+                  style={[
+                    styles.genrePill,
+                    {
+                      backgroundColor: colors.card,
+                      borderWidth: 1,
+                      borderColor: colors.border,
+                    },
+                  ]}
+                >
+                  <Text style={[styles.genreText, { color: colors.sub }]}>
+                    {g}
+                  </Text>
+                </View>
+              ))}
           </View>
         </View>
       </View>
-      <Text style={[styles.synopsis, { color: colors.text }]}>{stripHtml(data.description)}</Text>
-      <TouchableOpacity onPress={() => setPlayingStream({ url: data.trailer ? `https://www.youtube.com/watch?v=${data.trailer.id}` : null, title: data.title?.english })} style={[styles.primaryBtn, { backgroundColor: colors.text, marginTop: 20 }]}>
-        <Text style={[styles.primaryBtnText, { color: colors.bg }]}>▶ PLAY TRAILER</Text>
+      <Text style={[styles.synopsis, { color: colors.sub2 }]}>
+        {stripHtml(detailData?.description || selected.description)}
+      </Text>
+      <TouchableOpacity
+        style={[
+          styles.primaryBtn,
+          { backgroundColor: colors.text, marginTop: 20 },
+        ]}
+        onPress={() => handleStream(selected)}
+      >
+        <Ionicons name="play" size={18} color={colors.bg} />
+        <Text style={[styles.primaryBtnText, { color: colors.bg }]}>
+          {" "}
+          Watch
+        </Text>
       </TouchableOpacity>
       <TouchableOpacity
-        onPress={() => {
-          if (isInLib) setLibrary(library.filter((x) => x.id !== data.id));
-          else setLibrary([...library, data]);
-        }}
-        style={[styles.secondaryBtn, { backgroundColor: colors.card2 }]}
+        style={[
+          styles.secondaryBtn,
+          {
+            backgroundColor: isInLibrary(selected.id, selected._sourceId)
+              ? colors.text
+              : colors.card,
+            borderWidth: 1,
+            borderColor: isInLibrary(selected.id, selected._sourceId)
+              ? colors.text
+              : colors.border,
+          },
+        ]}
+        onPress={() => toggleLibrary(selected)}
       >
-        <Text style={[styles.secondaryBtnText, { color: colors.text }]}>{isInLib ? "Remove from Library" : "+ Add to Library"}</Text>
+        <Ionicons
+          name={
+            isInLibrary(selected.id, selected._sourceId)
+              ? "checkmark"
+              : "bookmark-outline"
+          }
+          size={18}
+          color={
+            isInLibrary(selected.id, selected._sourceId)
+              ? colors.bg
+              : colors.text
+          }
+        />
+        <Text
+          style={[
+            styles.secondaryBtnText,
+            {
+              color: isInLibrary(selected.id, selected._sourceId)
+                ? colors.bg
+                : colors.text,
+            },
+          ]}
+        >
+          {isInLibrary(selected.id, selected._sourceId) ? "  Saved" : "  Save"}
+        </Text>
       </TouchableOpacity>
+      <View style={{ height: 120 }} />
     </ScrollView>
   );
 }

@@ -1,4 +1,4 @@
-export const getColors = (theme) =>
+export const getThemes = (theme) =>
   theme === "dark"
     ? {
         bg: "#000000",
