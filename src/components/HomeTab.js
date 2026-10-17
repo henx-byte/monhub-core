@@ -85,7 +85,7 @@ export function HomeTab({
             _type: type,
           })),
         ],
-        hasNext: result.hasNext,
+        hasNext: result.hasNext || false,
         page: nextPage,
         error: result.error || null,
       },

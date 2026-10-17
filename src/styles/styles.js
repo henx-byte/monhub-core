@@ -128,7 +128,7 @@ export const styles = StyleSheet.create({
     textAlign: "center",
     lineHeight: 14,
   },
-  emptySmall: { padding: 10, borderRadius: 12, alignItems: "center" },
+  emptySmall: { marginTop: 24, padding: 10, borderRadius: 12, alignItems: "center" },
   errorBox: { padding: 10, borderRadius: 10, marginTop: 10 },
   fileCard: {
     borderRadius: 12,
